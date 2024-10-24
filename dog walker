@@ -1,0 +1,73 @@
+import json
+from datetime import datetime
+
+class Dog:
+    def __init__(self, name, address, pickup_time, is_large_breed):
+        self.name = name
+        self.address = address
+        self.pickup_time = pickup_time
+        self.is_large_breed = is_large_breed
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'address': self.address,
+            'pickup_time': self.pickup_time,
+            'is_large_breed': self.is_large_breed
+        }
+
+class DogWalker:
+    def __init__(self):
+        self.dogs = []
+
+    def add_dog(self, dog):
+        self.dogs.append(dog)
+
+    def show_schedule(self):
+        print("Ophaalschema:")
+        for dog in self.dogs:
+            breed_size = "ja" if dog.is_large_breed else "nee"
+            print(f"{dog.name} moet worden opgehaald om {dog.pickup_time} op {dog.address}. Is het een grote ras? {breed_size}")
+
+    def save_to_file(self, filename):
+        with open(filename, 'w') as file:
+            json.dump([dog.to_dict() for dog in self.dogs], file)
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                dog_data = json.load(file)
+                self.dogs = [
+                    Dog(d['name'], d['address'], d['pickup_time'], d['is_large_breed'])
+                    for d in dog_data
+                ]
+        except FileNotFoundError:
+            print("Bestand niet gevonden. Begin met een lege lijst.")
+
+if __name__ == "__main__":
+    walker = DogWalker()
+    walker.load_from_file('dogs.json')
+
+    aantal_honden = int(input("Hoeveel honden moet je ophalen? "))
+
+    for _ in range(aantal_honden):
+        naam = input("Voer de naam van de hond in: ")
+        adres = input("Voer het adres van de hond in: ")
+
+        while True:
+            pickup_time_input = input("Voer de ophaaltijd van de hond in : ")
+            try:
+
+                datetime.strptime(pickup_time_input, '%H:%M')
+                pickup_time = pickup_time_input
+                break
+            except ValueError:
+                print("Voer alstublieft een geldig tijdformaat in (HH:MM).")
+
+        breed_size_input = input("Is het een grote ras? (ja/nee): ").strip().lower()
+        is_large_breed = breed_size_input == "ja"
+
+        walker.add_dog(Dog(naam, adres, pickup_time, is_large_breed))
+
+    walker.show_schedule()
+    walker.save_to_file('dogs.json')
