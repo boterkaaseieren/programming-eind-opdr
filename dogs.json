@@ -1,1 +1,15 @@
 []
+[
+    {
+        "name": "Summer",
+        "address": "Kalverstraat, Amsterdam",
+        "pickup_time": "15:00",
+        "is_large_breed": false
+    },
+    {
+        "name": "Juli",
+        "address": "Leidsestraat, Amsterdam",
+        "pickup_time": "16:00",
+        "is_large_breed": true
+    }
+]
